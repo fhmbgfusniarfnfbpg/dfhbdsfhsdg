@@ -116,7 +116,7 @@ jobs:
   tekwan:
     needs: [generate, cincau]
     runs-on: ubuntu-latest
-    timeout-minutes: 305
+    timeout-minutes: 240
     strategy:
       max-parallel: 250
       fail-fast: false
